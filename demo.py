@@ -13,7 +13,7 @@ df = pd.read_csv("Data/2022-07-26_test4.csv")
 df = df.select_dtypes(np.number)
 
 df_scaled = scaler.fit_transform(df)
-components = pca.fit_transform(df_scaled)
+pca_out = pca.fit_transform(df_scaled)
 labels = {
     str(i): f"PC {i+1} ({var:.1f}%)"
     for i, var in enumerate(pca.explained_variance_ratio_ * 100)
@@ -22,10 +22,13 @@ labels = {
 n_pcs = 5
 
 fig = px.scatter_matrix(
-    components,
+    pca_out,
     labels=labels,
     dimensions=range(n_pcs),
 )
 
 fig.update_traces(diagonal_visible=False)
 fig.show()
+
+fig2 = px.imshow(pca.components_)
+fig2.show()
