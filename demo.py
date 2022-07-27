@@ -28,7 +28,7 @@ fig = px.scatter_matrix(
 )
 
 fig.update_traces(diagonal_visible=False)
-fig.show()
+# fig.show()
 
 fig2 = px.imshow(pca.components_)
 fig2.show()
