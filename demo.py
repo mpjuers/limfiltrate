@@ -9,10 +9,9 @@ from sklearn.decomposition import PCA
 pca = PCA()
 scaler = MinMaxScaler()
 
-df = pd.read_csv("Data/2022-07-26_test4.csv")
-df = df.select_dtypes(np.number)
+df = pd.read_csv("Data/2022-07-26_test4_with-classification.csv")
 
-df_scaled = scaler.fit_transform(df)
+df_scaled = scaler.fit_transform(df.select_dtypes(np.number))
 pca_out = pca.fit_transform(df_scaled)
 labels = {
     str(i): f"PC {i+1} ({var:.1f}%)"
@@ -25,6 +24,7 @@ fig = px.scatter_matrix(
     pca_out,
     labels=labels,
     dimensions=range(n_pcs),
+    color=df["class"],
 )
 
 fig.update_traces(diagonal_visible=False)
