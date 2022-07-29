@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 
+import dash
+from dash import Dash, dcc, html
+import dash_bootstrap_components as dbc
 import numpy as np
 import pandas as pd
 import plotly.express as px
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
+
+
+app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 pca = PCA()
 scaler = MinMaxScaler()
@@ -24,8 +30,8 @@ df["longskinnies"] = df.aspect_ratio.map(
 )
 
 df_scaled = scaler.fit_transform(df.select_dtypes(np.number))
-
 pca_out = pca.fit_transform(df_scaled)
+
 labels = {
     str(i): f"PC {i+1} ({var:.1f}%)"
     for i, var in enumerate(pca.explained_variance_ratio_ * 100)
@@ -42,7 +48,30 @@ fig = px.scatter_matrix(
 )
 
 fig.update_traces(diagonal_visible=False)
-# fig.show()
 
-fig2 = px.imshow(pca.components_)
-fig2.show()
+app.layout = html.Div(
+    dbc.Row(
+        [
+            dbc.Col(
+                [
+                    html.Div(
+                        dcc.Graph(figure=fig),
+                    ),
+                ],
+                width=9,
+            ),
+            dbc.Col(
+                [
+                    html.Div(
+                        "filler text",
+                    ),
+                ],
+                width=3,
+            ),
+        ],
+    ),
+)
+
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
