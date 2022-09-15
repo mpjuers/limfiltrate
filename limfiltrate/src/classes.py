@@ -17,10 +17,15 @@ class Analysis:
             .str.lower()
         )
         print(self.data.columns)
+        self.data = self.data.set_index("capture_id")
         return None
 
-    def filter_data(self, drop_columns):
-        return self.data.drop(drop_columns, axis=1)
+    def filter_data(self, drop_columns=None):
+        if drop_columns is not None:
+            print(self.data.columns)
+            return self.data.drop(drop_columns, axis=1)
+        else:
+            return self.data
 
 
 if __name__ == "__main__":

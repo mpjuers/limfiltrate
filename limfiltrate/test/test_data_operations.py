@@ -19,7 +19,7 @@ data.columns = data.columns = (
     .str.replace(")", "--")
     .str.lower()
 )
-filtered_data = data.drop("capture_id", axis=1)
+filtered_data = data.set_index("capture_id")
 
 
 def test_analysis_init():
@@ -27,6 +27,6 @@ def test_analysis_init():
 
 
 def test_filter_data():
-    assert dumps(Analysis(data_path).filter_data("capture_id")) == dumps(
+    assert dumps(Analysis(data_path).filter_data()) == dumps(
         filtered_data
     )
