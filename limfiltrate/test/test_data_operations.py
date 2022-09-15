@@ -1,9 +1,32 @@
 #!/usr/bin/env python3
 
+import os
+from pickle import dumps
+
+import pandas as pd
 from limfiltrate.src.classes import Analysis
 
-def test_analysis_init():
-    assert Analysis("Data/2022-07-26_test4_with-classification.csv")
+dirname = os.path.dirname(__file__)
+data_path = os.path.join(
+    dirname, "../Data/2022-07-26_test4_with-classification.csv"
+)
+data = pd.read_csv(data_path)
 
-def test_read_data():
-    assert Analysis("Data/2022-07-26_test4_with-classification.csv").read_data()
+data.columns = data.columns = (
+    data.columns.str.replace(" ", "_")
+    .str.replace("/", "-")
+    .str.replace("(", "--")
+    .str.replace(")", "--")
+    .str.lower()
+)
+filtered_data = data.drop("capture_id", axis=1)
+
+
+def test_analysis_init():
+    assert Analysis(data_path)
+
+
+def test_filter_data():
+    assert dumps(Analysis(data_path).filter_data("capture_id")) == dumps(
+        filtered_data
+    )
