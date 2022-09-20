@@ -4,10 +4,13 @@
 import os
 import random
 
+from dash import dash_table
 import pandas as pd
 import pytest as pt
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+
+from limfiltrate.src.classes import Analysis
 
 random.seed(666)
 dirname = os.path.dirname(__file__)
@@ -35,11 +38,19 @@ def data():
 
 
 @pt.fixture
+def analysis():
+    return Analysis(data_path)
+
+
+@pt.fixture
 def pcafixture(data):
     scaler = StandardScaler()
     scaled = scaler.fit_transform(data.drop("class", axis=1))
     pca = PCA()
-    return pca.fit_transform(scaled)
+    return pd.DataFrame(
+        pca.fit_transform(scaled),
+        columns=["PC" + str(i) for i in range(1, scaled.shape[1] + 1)],
+    )
 
 
 @pt.fixture
@@ -52,8 +63,22 @@ def customdata(data):
 @pt.fixture
 def summary(data):
     return (
-        data.drop("class", axis=1)
-        .melt()
-        .groupby("variable")
-        .agg(["min", "max", "mean", "std"])
+        (
+            data.drop("class", axis=1)
+            .melt()
+            .groupby("variable")
+            .agg(["min", "max", "mean", "std"])
+        )
+        .droplevel(0, axis=1)
+        .round(2)
     )
+
+
+@pt.fixture
+def data_table(summary):
+    summary.insert(0, "particle_property", summary.index)
+    table = dash_table.DataTable(
+        summary.round(2).to_dict("records"),
+        [{"name": i, "id": i} for i in summary.columns],
+    )
+    return table

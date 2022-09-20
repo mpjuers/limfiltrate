@@ -3,7 +3,10 @@
 
 import os
 
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, dash_table
+import dash_bootstrap_components as dbc
+import plotly.express as px
+import plotly.graph_objs as go
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -55,36 +58,71 @@ class Analysis:
         scaler = StandardScaler()
         scaled = scaler.fit_transform(self.data.drop("class", axis=1))
         pca = PCA()
-        df = pca.fit_transform(scaled)
+        df = pd.DataFrame(
+            pca.fit_transform(scaled),
+            columns=["PC" + str(i) for i in range(1, scaled.shape[1] + 1)],
+        )
         return {"pca": pca, "transformed_data": df}
 
-    def summarize(self, stats=["min", "max", "mean", "std"], *args, **kwargs):
+    def summarize(
+        self, stats=["min", "max", "mean", "std"], precision=2, *args, **kwargs
+    ):
         return (
-            self.data.drop("class", axis=1)
-            .melt()
-            .groupby("variable")
-            .agg(stats)
+            (
+                self.data.drop("class", axis=1)
+                .melt()
+                .groupby("variable")
+                .agg(stats)
+            )
+            .droplevel(0, axis=1)
+            .round(precision)
         )
+
+
+class Graphics:
+    def __init__(self, analysis):
+        self.analysis = analysis
+        self.data = analysis.data
+        return None
+
+    def generate_pca_plot(self):
+        pca = self.analysis.generate_pca()
+        df = pca["transformed_data"].iloc[:, 0:5]
+        dimensions = [
+            {"label": i, "values": tuple(value)} for i, value in df.items()
+        ]
+        fig = go.Figure(
+            go.Splom(
+                dimensions=dimensions,
+                showlowerhalf=False,
+            )
+        )
+        return fig
+
+    def generate_data_table(self, precision=2):
+        summary = self.analysis.summarize()
+        summary.insert(0, "particle_property", summary.index)
+        summary = summary.round(precision)
+        table = dash_table.DataTable(
+            summary.to_dict("records"),
+            [{"name": i, "id": i} for i in summary.columns],
+        )
+        return table
 
 
 if __name__ == "__main__":
 
-    # abspath = os.path.abspath(__file__)
-    # dname = os.path.dirname(abspath)
-    # print(dname)
-    # os.chdir(dname)
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    print(dname)
+    os.chdir(dname)
     datapath = "../Data/2022-07-26_test4_with-classification.csv"
-    print(
-        Analysis(datapath)
-        .data.drop("class", axis=1)
-        .melt()
-        .groupby("variable")
-        .agg(
-            [
-                "min",
-                "max",
-                "mean",
-                "std",
-            ]
-        )
+    analysis = Analysis(datapath)
+    Graphics(analysis).generate_data_table()
+    fig = Graphics(analysis).generate_pca_plot()
+    table = Graphics(analysis).generate_data_table()
+    app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+    app.layout = html.Div(
+        children=[dcc.Graph(id="example-graph", figure=fig), table]
     )
+    app.run_server(debug=True)

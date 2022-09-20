@@ -2,6 +2,7 @@
 # Copyright 2022 Mark Juers
 
 import os
+import pandas as pd
 from pickle import dumps
 
 from sklearn.preprocessing import StandardScaler
@@ -22,4 +23,7 @@ def test_pca(pcafixture, data):
     scaled = scaler.fit_transform(data.drop("class", axis=1))
     pca = PCA()
     pca.fit_transform(scaled)
+    df = pd.DataFrame(
+        pca.fit_transform(scaled), columns=scaler.feature_names_in_
+    )
     assert dumps(pcafixture) == dumps(analysis["transformed_data"])
