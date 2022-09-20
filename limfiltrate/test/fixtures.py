@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright 2022 Mark Juers
 
 import os
 import random
