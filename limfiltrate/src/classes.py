@@ -58,19 +58,12 @@ class Analysis:
         df = pca.fit_transform(scaled)
         return {"pca": pca, "transformed_data": df}
 
-    def summarize(self, *args, **kwargs):
+    def summarize(self, stats=["min", "max", "mean", "std"], *args, **kwargs):
         return (
             self.data.drop("class", axis=1)
             .melt()
             .groupby("variable")
-            .agg(
-                [
-                    "min",
-                    "max",
-                    "mean",
-                    "std",
-                ]
-            )
+            .agg(stats)
         )
 
 
