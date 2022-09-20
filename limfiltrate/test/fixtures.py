@@ -46,3 +46,13 @@ def customdata(data):
     n_sample = 20
     customdata = random.sample(list(data.index), n_sample)
     return customdata
+
+
+@pt.fixture
+def summary(data):
+    return (
+        data.drop("class", axis=1)
+        .melt()
+        .groupby("variable")
+        .agg(["min", "max", "mean", "std"])
+    )

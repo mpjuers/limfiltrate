@@ -57,6 +57,21 @@ class Analysis:
         df = pca.fit_transform(scaled)
         return {"pca": pca, "transformed_data": df}
 
+    def summarize(self, *args, **kwargs):
+        return (
+            self.data.drop("class", axis=1)
+            .melt()
+            .groupby("variable")
+            .agg(
+                [
+                    "min",
+                    "max",
+                    "mean",
+                    "std",
+                ]
+            )
+        )
+
 
 if __name__ == "__main__":
 
@@ -64,5 +79,18 @@ if __name__ == "__main__":
     # dname = os.path.dirname(abspath)
     # print(dname)
     # os.chdir(dname)
-    app = Dash(__name__)
-    app.run_server(debug=True)
+    datapath = "../Data/2022-07-26_test4_with-classification.csv"
+    print(
+        Analysis(datapath)
+        .data.drop("class", axis=1)
+        .melt()
+        .groupby("variable")
+        .agg(
+            [
+                "min",
+                "max",
+                "mean",
+                "std",
+            ]
+        )
+    )

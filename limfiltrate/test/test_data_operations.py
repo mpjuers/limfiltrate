@@ -3,7 +3,7 @@
 import os
 from pickle import dumps
 
-from limfiltrate.test.fixtures import data, customdata
+from limfiltrate.test.fixtures import data, customdata, summary
 from limfiltrate.src.classes import Analysis
 
 
@@ -21,3 +21,7 @@ def test_filter_data(data, customdata):
     assert dumps(
         Analysis(data_path).filter_data(customdata).loc[customdata]
     ) == dumps(data.loc[customdata])
+
+
+def test_summarize(data, summary):
+    assert dumps(summary) == dumps(Analysis(data_path).summarize())
