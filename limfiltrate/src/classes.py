@@ -2,6 +2,7 @@
 
 import os
 
+from dash import Dash, html, dcc
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -59,11 +60,9 @@ class Analysis:
 
 if __name__ == "__main__":
 
-    abspath = os.path.abspath(__file__)
-    dname = os.path.dirname(abspath)
-    os.chdir(dname)
-    print(
-        Analysis(
-            "../Data/2022-07-26_test4_with-classification.csv"
-        ).generate_pca()
-    )
+    # abspath = os.path.abspath(__file__)
+    # dname = os.path.dirname(abspath)
+    # print(dname)
+    # os.chdir(dname)
+    app = Dash(__name__)
+    app.run_server(debug=True)
