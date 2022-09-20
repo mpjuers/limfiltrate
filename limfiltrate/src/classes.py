@@ -11,6 +11,8 @@ class Analysis:
     def __init__(self, csv):
         """
         csv (string): Path to the file containing the data for analysis.
+
+        returns: None
         """
         self.data = pd.read_csv(csv)
         self.data.columns = (
@@ -30,13 +32,24 @@ class Analysis:
     def filter_data(self, customdata, drop_columns=None):
         """
         customdata (list-like): a list of indices to retain in analysis and plotting step
+
+        returns: DataFrame
+            the filtered DataFrame
         """
         if drop_columns is not None:
             return self.data.drop(drop_columns, axis=1).loc[customdata]
         else:
             return self.data.loc[customdata]
 
-    def generate_pca(self):
+    def generate_pca(self, *args, **kwargs):
+        """
+        **kwargs:
+            customdata (list-like): See documentation for self.filter_data()
+
+        returns: dict
+            pca (PCA): the fit pca object
+            transformed_data (DataFrame): data transformed according to pca
+        """
         scaler = StandardScaler()
         scaled = scaler.fit_transform(self.data.drop("class", axis=1))
         pca = PCA()
