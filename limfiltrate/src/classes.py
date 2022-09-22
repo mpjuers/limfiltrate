@@ -123,6 +123,27 @@ if __name__ == "__main__":
     table = Graphics(analysis).generate_data_table()
     app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
     app.layout = html.Div(
-        children=[dcc.Graph(id="example-graph", figure=fig), table]
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.Div(
+                            dcc.Graph(figure=fig),
+                        ),
+                    ],
+                    width=9,
+                ),
+                dbc.Col(
+                    [
+                        html.Div(
+                            table,
+                        ),
+                    ],
+                    width=3,
+                ),
+            ],
+        ),
     )
+
+    fig.update_layout(width=1000, height=700)
     app.run_server(debug=True)
