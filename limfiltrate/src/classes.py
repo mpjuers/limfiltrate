@@ -18,6 +18,10 @@ class Analysis:
         csv (string): Path to the file containing the data for analysis.
 
         returns: None
+
+        Attributes:
+            data (DataFrame): The original dataframe, appropriately formatted.
+            data_filtered (DataFrame): The dataframe refined by filter.
         """
         self.data = pd.read_csv(csv)
         self.data.columns = (
@@ -30,19 +34,21 @@ class Analysis:
         classes = self.data["class"]
         self.data = self.data.set_index("capture_id").select_dtypes(include=["float64"])
         self.data["class"] = classes
+        self.data_filtered = self.data
         return None
 
     def filter_data(self, customdata, drop_columns=None):
         """
         customdata (list-like): a list of indices to retain in analysis and plotting step
 
-        returns: DataFrame
-            the filtered DataFrame
+        returns: Analysis
+            The Analysis object with the data_filtered updated
         """
         if drop_columns is not None:
-            return self.data.drop(drop_columns, axis=1).loc[customdata]
+            self.data_filtered = self.data.drop(drop_columns, axis=1).loc[customdata]
         else:
-            return self.data.loc[customdata]
+            self.data_filtered = self.data.loc[customdata]
+        return self
 
     def generate_pca(self, *args, **kwargs):
         """
