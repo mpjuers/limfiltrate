@@ -14,9 +14,7 @@ from limfiltrate.src.classes import Analysis
 
 random.seed(666)
 dirname = os.path.dirname(__file__)
-data_path = os.path.join(
-    dirname, "../Data/2022-07-26_test4_with-classification.csv"
-)
+data_path = os.path.join(dirname, "../Data/2022-07-26_test4_with-classification.csv")
 
 
 @pt.fixture
@@ -30,9 +28,7 @@ def data():
         .str.lower()
     )
     classes = data["class"]
-    filtered_data = data.set_index("capture_id").select_dtypes(
-        include=["float64"]
-    )
+    filtered_data = data.set_index("capture_id").select_dtypes(include=["float64"])
     filtered_data["class"] = classes
     return filtered_data
 
@@ -80,5 +76,13 @@ def data_table(summary):
     table = dash_table.DataTable(
         summary.round(2).to_dict("records"),
         [{"name": i, "id": i} for i in summary.columns],
+        style_as_list_view=True,
+        style_cell={"textAlign": "left"},
+        style_cell_conditional=[
+            {
+                "if": {"column_id": "particle_property"},
+                "textAlign": "right",
+            }
+        ],
     )
     return table
