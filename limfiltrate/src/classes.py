@@ -28,9 +28,7 @@ class Analysis:
             .str.lower()
         )
         classes = self.data["class"]
-        self.data = self.data.set_index("capture_id").select_dtypes(
-            include=["float64"]
-        )
+        self.data = self.data.set_index("capture_id").select_dtypes(include=["float64"])
         self.data["class"] = classes
         return None
 
@@ -68,12 +66,7 @@ class Analysis:
         self, stats=["min", "max", "mean", "std"], precision=2, *args, **kwargs
     ):
         return (
-            (
-                self.data.drop("class", axis=1)
-                .melt()
-                .groupby("variable")
-                .agg(stats)
-            )
+            (self.data.drop("class", axis=1).melt().groupby("variable").agg(stats))
             .droplevel(0, axis=1)
             .round(precision)
         )
@@ -88,9 +81,7 @@ class Graphics:
     def generate_pca_plot(self):
         pca = self.analysis.generate_pca()
         df = pca["transformed_data"].iloc[:, 0:5]
-        dimensions = [
-            {"label": i, "values": tuple(value)} for i, value in df.items()
-        ]
+        dimensions = [{"label": i, "values": tuple(value)} for i, value in df.items()]
         fig = go.Figure(
             go.Splom(
                 dimensions=dimensions,
@@ -106,19 +97,30 @@ class Graphics:
         table = dash_table.DataTable(
             summary.to_dict("records"),
             [{"name": i, "id": i} for i in summary.columns],
+            style_as_list_view=True,
+            style_cell={"textAlign": "left"},
+            style_cell_conditional=[
+                {
+                    "if": {"column_id": "particle_property"},
+                    "textAlign": "right",
+                }
+            ],
         )
         return table
 
 
 class App:
-    
     def __init__(self, graphics):
+        """
+        graphics (Graphics):
+        """
         self.graphics = graphics
         self.app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
         self.fig = graphics.generate_pca_plot()
         self.table = graphics.generate_data_table()
 
     def layout(self):
+        """ """
         self.app.layout = html.Div(
             dbc.Row(
                 [
@@ -144,7 +146,6 @@ class App:
 
         self.fig.update_layout(width=1000, height=700)
         self.app.run_server(debug=True)
-
 
 
 if __name__ == "__main__":
