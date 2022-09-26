@@ -110,6 +110,43 @@ class Graphics:
         return table
 
 
+class App:
+    
+    def __init__(self, graphics):
+        self.graphics = graphics
+        self.app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+        self.fig = graphics.generate_pca_plot()
+        self.table = graphics.generate_data_table()
+
+    def layout(self):
+        self.app.layout = html.Div(
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            html.Div(
+                                dcc.Graph(figure=self.fig),
+                            ),
+                        ],
+                        width=9,
+                    ),
+                    dbc.Col(
+                        [
+                            html.Div(
+                                self.table,
+                            ),
+                        ],
+                        width=3,
+                    ),
+                ],
+            ),
+        )
+
+        self.fig.update_layout(width=1000, height=700)
+        self.app.run_server(debug=True)
+
+
+
 if __name__ == "__main__":
 
     abspath = os.path.abspath(__file__)
@@ -118,32 +155,5 @@ if __name__ == "__main__":
     os.chdir(dname)
     datapath = "../Data/2022-07-26_test4_with-classification.csv"
     analysis = Analysis(datapath)
-    Graphics(analysis).generate_data_table()
-    fig = Graphics(analysis).generate_pca_plot()
-    table = Graphics(analysis).generate_data_table()
-    app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-    app.layout = html.Div(
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
-                        html.Div(
-                            dcc.Graph(figure=fig),
-                        ),
-                    ],
-                    width=9,
-                ),
-                dbc.Col(
-                    [
-                        html.Div(
-                            table,
-                        ),
-                    ],
-                    width=3,
-                ),
-            ],
-        ),
-    )
-
-    fig.update_layout(width=1000, height=700)
-    app.run_server(debug=True)
+    graphics = Graphics(analysis)
+    app = App(graphics).layout()
