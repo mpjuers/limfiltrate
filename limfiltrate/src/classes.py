@@ -2,6 +2,7 @@
 # Copyright 2022 Mark Juers
 
 import os
+import random
 
 from dash import Dash, html, dcc, dash_table
 import dash_bootstrap_components as dbc
@@ -84,9 +85,10 @@ class Graphics:
         self.data = analysis.data
         return None
 
-    def generate_pca_plot(self):
+    def generate_pca_plot(self, pcs_to_show=range(0, 5)):
         pca = self.analysis.generate_pca()
-        df = pca["transformed_data"].iloc[:, 0:5]
+        df = pca["transformed_data"].iloc[:, pcs_to_show]
+        # print(df.head())
         dimensions = [{"label": i, "values": tuple(value)} for i, value in df.items()]
         fig = go.Figure(
             go.Splom(
@@ -122,7 +124,8 @@ class App:
         """
         self.graphics = graphics
         self.app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-        self.fig = graphics.generate_pca_plot()
+        self.fig = graphics.generate_pca_plot(range(0, 5))
+        breakpoint()
         self.table = graphics.generate_data_table()
 
     def layout(self):
@@ -133,7 +136,12 @@ class App:
                     dbc.Col(
                         [
                             html.Div(
-                                dcc.Graph(figure=self.fig),
+                                [
+                                    dcc.RangeSlider(
+                                        0, 10, step=1, value=[1, 6], id="pcs-to-display"
+                                    ),
+                                    dcc.Graph(figure=self.fig, id="pca-plot"),
+                                ]
                             ),
                         ],
                         width=9,
