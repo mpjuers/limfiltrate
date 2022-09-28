@@ -9,7 +9,9 @@ from limfiltrate.src.classes import Analysis
 
 
 dirname = os.path.dirname(__file__)
-data_path = os.path.join(dirname, "../Data/2022-07-26_test4_with-classification.csv")
+data_path = os.path.join(
+    dirname, "../Data/2022-07-26_test4_with-classification.csv"
+)
 
 
 def test_analysis_init():
@@ -17,9 +19,9 @@ def test_analysis_init():
 
 
 def test_filter_data(data, customdata):
-    assert dumps(Analysis(data_path).filter_data(customdata).data_filtered) == dumps(
-        data.loc[customdata]
-    )
+    assert dumps(
+        Analysis(data_path).filter_data(customdata).data_filtered
+    ) == dumps(data.loc[customdata])
 
 
 def test_summarize(data, summary):

@@ -16,7 +16,9 @@ from limfiltrate.src.classes import Analysis
 random.seed(666)
 
 dirname = os.path.dirname(__file__)
-data_path = os.path.join(dirname, "../Data/2022-07-26_test4_with-classification.csv")
+data_path = os.path.join(
+    dirname, "../Data/2022-07-26_test4_with-classification.csv"
+)
 
 
 @pt.fixture
@@ -30,7 +32,9 @@ def data():
         .str.lower()
     )
     classes = data["class"]
-    filtered_data = data.set_index("capture_id").select_dtypes(include=["float64"])
+    filtered_data = data.set_index("capture_id").select_dtypes(
+        include=["float64"]
+    )
     filtered_data["class"] = classes
     return filtered_data
 
@@ -93,7 +97,9 @@ def data_table(summary):
 @pt.fixture
 def pca_plot_0_5(analysis):
     df = analysis.generate_pca()["transformed_data"].iloc[:, range(0, 5)]
-    dimensions = [{"label": i, "values": tuple(value)} for i, value in df.items()]
+    dimensions = [
+        {"label": i, "values": tuple(value)} for i, value in df.items()
+    ]
     fig = go.Figure(
         go.Splom(
             dimensions=dimensions,
@@ -106,7 +112,9 @@ def pca_plot_0_5(analysis):
 @pt.fixture
 def pca_plot_1_3(analysis):
     df = analysis.generate_pca()["transformed_data"].iloc[:, range(1, 3)]
-    dimensions = [{"label": i, "values": tuple(value)} for i, value in df.items()]
+    dimensions = [
+        {"label": i, "values": tuple(value)} for i, value in df.items()
+    ]
     fig = go.Figure(
         go.Splom(
             dimensions=dimensions,

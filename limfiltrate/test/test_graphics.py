@@ -14,11 +14,14 @@ from limfiltrate.test.fixtures import *
 
 
 dirname = os.path.dirname(__file__)
-data_path = os.path.join(dirname, "../Data/2022-07-26_test4_with-classification.csv")
+data_path = os.path.join(
+    dirname, "../Data/2022-07-26_test4_with-classification.csv"
+)
 
 
 @pytest.mark.parametrize(
-    "range_in,expected", [(range(0, 5), "pca_plot_0_5"), (range(1, 3), "pca_plot_1_3")]
+    "range_in,expected",
+    [(range(0, 5), "pca_plot_0_5"), (range(1, 3), "pca_plot_1_3")],
 )
 def test_generate_pca_plot(request, analysis, range_in, expected):
     fig = request.getfixturevalue(expected)

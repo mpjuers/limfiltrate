@@ -33,7 +33,9 @@ class Analysis:
             .str.lower()
         )
         classes = self.data["class"]
-        self.data = self.data.set_index("capture_id").select_dtypes(include=["float64"])
+        self.data = self.data.set_index("capture_id").select_dtypes(
+            include=["float64"]
+        )
         self.data["class"] = classes
         self.data_filtered = self.data
         return None
@@ -46,7 +48,9 @@ class Analysis:
             The Analysis object with the data_filtered updated
         """
         if drop_columns is not None:
-            self.data_filtered = self.data.drop(drop_columns, axis=1).loc[customdata]
+            self.data_filtered = self.data.drop(drop_columns, axis=1).loc[
+                customdata
+            ]
         else:
             self.data_filtered = self.data.loc[customdata]
         return self
@@ -73,7 +77,12 @@ class Analysis:
         self, stats=["min", "max", "mean", "std"], precision=2, *args, **kwargs
     ):
         return (
-            (self.data.drop("class", axis=1).melt().groupby("variable").agg(stats))
+            (
+                self.data.drop("class", axis=1)
+                .melt()
+                .groupby("variable")
+                .agg(stats)
+            )
             .droplevel(0, axis=1)
             .round(precision)
         )
@@ -89,7 +98,9 @@ class Graphics:
         pca = self.analysis.generate_pca()
         df = pca["transformed_data"].iloc[:, pcs_to_show]
         # print(df.head())
-        dimensions = [{"label": i, "values": tuple(value)} for i, value in df.items()]
+        dimensions = [
+            {"label": i, "values": tuple(value)} for i, value in df.items()
+        ]
         fig = go.Figure(
             go.Splom(
                 dimensions=dimensions,
@@ -138,7 +149,11 @@ class App:
                             html.Div(
                                 [
                                     dcc.RangeSlider(
-                                        0, 10, step=1, value=[1, 6], id="pcs-to-display"
+                                        0,
+                                        10,
+                                        step=1,
+                                        value=[1, 6],
+                                        id="pcs-to-display",
                                     ),
                                     dcc.Graph(figure=self.fig, id="pca-plot"),
                                 ]
