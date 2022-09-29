@@ -4,7 +4,7 @@
 import os
 import random
 
-from dash import Dash, html, dcc, dash_table
+from dash import Dash, html, dcc, dash_table, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objs as go
@@ -128,62 +128,55 @@ class Graphics:
         return table
 
 
-class App:
-    def __init__(self, graphics):
-        """
-        graphics (Graphics):
-        """
-        self.graphics = graphics
-        self.app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
-        self.fig = graphics.generate_pca_plot(range(0, 5))
-        breakpoint()
-        self.table = graphics.generate_data_table()
-
-    def layout(self):
-        """ """
-        self.app.layout = html.Div(
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            html.Div(
-                                [
-                                    dcc.RangeSlider(
-                                        0,
-                                        10,
-                                        step=1,
-                                        value=[1, 6],
-                                        id="pcs-to-display",
-                                    ),
-                                    dcc.Graph(figure=self.fig, id="pca-plot"),
-                                ]
-                            ),
-                        ],
-                        width=9,
-                    ),
-                    dbc.Col(
-                        [
-                            html.Div(
-                                self.table,
-                            ),
-                        ],
-                        width=3,
-                    ),
-                ],
-            ),
-        )
-
-        self.fig.update_layout(width=1000, height=700)
-        self.app.run_server(debug=True)
-
-
 if __name__ == "__main__":
 
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
-    print(dname)
     os.chdir(dname)
     datapath = "../Data/2022-07-26_test4_with-classification.csv"
     analysis = Analysis(datapath)
     graphics = Graphics(analysis)
-    app = App(graphics).layout()
+    app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+    table = graphics.generate_data_table()
+    fig = graphics.generate_pca_plot(range(1, 5))
+
+    @app.callback(Output("pcaPlot", "figure"), Input("pcsToDisplay", "value"))
+    def _pca_plot(value):
+        return graphics.generate_pca_plot(range(*value))
+
+    app.layout = html.Div(
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.Div(
+                            [
+                                dcc.RangeSlider(
+                                    0,
+                                    10,
+                                    step=1,
+                                    value=[1, 6],
+                                    id="pcsToDisplay",
+                                ),
+                                dcc.Graph(
+                                    # figure=fig,
+                                    id="pcaPlot",
+                                ),
+                            ]
+                        ),
+                    ],
+                    width=9,
+                ),
+                dbc.Col(
+                    [
+                        html.Div(
+                            table,
+                        ),
+                    ],
+                    width=3,
+                ),
+            ],
+        ),
+    )
+
+    app.run_server(debug=True)
