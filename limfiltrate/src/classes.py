@@ -99,12 +99,14 @@ class Graphics:
         df = pca["transformed_data"].iloc[:, pcs_to_show]
         # print(df.head())
         dimensions = [
-            {"label": i, "values": tuple(value)} for i, value in df.items()
+            {"label": column, "values": tuple(value)}
+            for column, value in df.items()
         ]
         fig = go.Figure(
             go.Splom(
                 dimensions=dimensions,
                 showlowerhalf=False,
+                diagonal={"visible": False},
             )
         )
         return fig
@@ -116,7 +118,7 @@ class Graphics:
         table = dash_table.DataTable(
             summary.to_dict("records"),
             [{"name": i, "id": i} for i in summary.columns],
-            style_as_list_view=True,
+            style_as_list_view=True,  # Remove vertical cell lines.
             style_cell={"textAlign": "left"},
             style_cell_conditional=[
                 {
@@ -163,7 +165,6 @@ if __name__ == "__main__":
                                     },
                                 ),
                                 dcc.Graph(
-                                    # figure=fig,
                                     style={"width": "90vh", "height": "90vh"},
                                     id="pcaPlot",
                                 ),
