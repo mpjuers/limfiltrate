@@ -157,6 +157,9 @@ if __name__ == "__main__":
                                     step=1,
                                     value=[1, 6],
                                     id="pcsToDisplay",
+                                    marks={
+                                        i: str(i + 1) for i in range(0, 10)
+                                    },
                                 ),
                                 dcc.Graph(
                                     # figure=fig,
