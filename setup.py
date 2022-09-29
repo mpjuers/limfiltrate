@@ -7,8 +7,9 @@ setup(
     name="LimFiltrate",
     version="0.1",
     description="A PCA-based visual tool for optimizing flow cytometry filters.",
+    license="BSD",
     author="Neko Juers",
-    author_email="mpjuers.professional@gmail.com",
-    url="",
+    author_email="neko.juers@gmail.com",
+    url="https://github.com/mpjuers/limfiltrate",
     packages=["limfiltrate"],
 )
