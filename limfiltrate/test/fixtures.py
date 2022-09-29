@@ -104,7 +104,6 @@ def pca_plot_0_5(analysis):
         go.Splom(
             dimensions=dimensions,
             showlowerhalf=False,
-            diagonal={"visible": False},
         )
     )
     return fig
@@ -120,7 +119,6 @@ def pca_plot_1_3(analysis):
         go.Splom(
             dimensions=dimensions,
             showlowerhalf=False,
-            diagonal={"visible": False},
         )
     )
     return fig

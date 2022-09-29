@@ -106,7 +106,6 @@ class Graphics:
             go.Splom(
                 dimensions=dimensions,
                 showlowerhalf=False,
-                diagonal={"visible": False},
             )
         )
         return fig
@@ -153,7 +152,6 @@ if __name__ == "__main__":
                     [
                         html.Div(
                             [
-                                html.H1("PCs to display"),
                                 dcc.RangeSlider(
                                     0,
                                     10,
