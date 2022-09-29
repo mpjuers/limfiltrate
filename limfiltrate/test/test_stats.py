@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 Mark Juers
+# Copyright 2022 Neko Juers
 
 import os
 import pandas as pd
