@@ -151,6 +151,7 @@ if __name__ == "__main__":
                     [
                         html.Div(
                             [
+                                html.H1("PCs to display"),
                                 dcc.RangeSlider(
                                     0,
                                     10,
@@ -163,6 +164,7 @@ if __name__ == "__main__":
                                 ),
                                 dcc.Graph(
                                     # figure=fig,
+                                    style={"width": "90vh", "height": "90vh"},
                                     id="pcaPlot",
                                 ),
                             ]
