@@ -33,7 +33,10 @@ class Analysis:
             .str.replace(")", "")
             .str.lower()
         )
-        classes = self.data["class"]
+        try:
+            classes = self.data["class"]
+        except KeyError:
+            classes = ["" for row in range(self.data.shape[0])]
         self.data = self.data.set_index("capture_id").select_dtypes(
             include=["float64"]
         )
@@ -136,7 +139,7 @@ if __name__ == "__main__":
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
     os.chdir(dname)
-    datapath = "../Data/2022-07-26_test4_with-classification.csv"
+    datapath = "../Data/2022-09-30.csv"
     analysis = Analysis(datapath)
     graphics = Graphics(analysis)
     app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -180,7 +183,7 @@ if __name__ == "__main__":
                             ]
                         ),
                     ],
-                    width=9,
+                    width=7,
                 ),
                 dbc.Col(
                     [
@@ -188,7 +191,7 @@ if __name__ == "__main__":
                             id="dataTable",
                         ),
                     ],
-                    width=3,
+                    width=5,
                 ),
             ],
         ),
