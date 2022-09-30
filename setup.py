@@ -12,4 +12,5 @@ setup(
     author_email="neko.juers@gmail.com",
     url="https://github.com/mpjuers/limfiltrate",
     packages=["limfiltrate"],
+    setup_requires=["black"]
 )
