@@ -170,7 +170,7 @@ if __name__ == "__main__":
                                     0,
                                     10,
                                     step=1,
-                                    value=[1, 6],
+                                    value=[0, 6],
                                     id="pcsToDisplay",
                                     marks={
                                         i: str(i + 1) for i in range(0, 10)
