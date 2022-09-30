@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2022 Neko Juers
 
+import json
 import os
 import random
 
@@ -78,7 +79,7 @@ class Analysis:
     ):
         return (
             (
-                self.data.drop("class", axis=1)
+                self.data_filtered.drop("class", axis=1)
                 .melt()
                 .groupby("variable")
                 .agg(stats)
@@ -106,6 +107,7 @@ class Graphics:
             go.Splom(
                 dimensions=dimensions,
                 showlowerhalf=False,
+                customdata=self.data.index,
             )
         )
         return fig
@@ -145,6 +147,15 @@ if __name__ == "__main__":
     def _pca_plot(value):
         return graphics.generate_pca_plot(range(*value))
 
+    @app.callback(
+        Output("dataTable", "children"), Input("pcaPlot", "selectedData")
+    )
+    def _data_table(selectedData):
+        points = [point["customdata"] for point in selectedData["points"]]
+        graphics.analysis.filter_data(points)
+        table = graphics.generate_data_table()
+        return table
+
     app.layout = html.Div(
         dbc.Row(
             [
@@ -174,7 +185,7 @@ if __name__ == "__main__":
                 dbc.Col(
                     [
                         html.Div(
-                            table,
+                            id="dataTable",
                         ),
                     ],
                     width=3,

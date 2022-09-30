@@ -95,7 +95,7 @@ def data_table(summary):
 
 
 @pt.fixture
-def pca_plot_0_5(analysis):
+def pca_plot_0_5(analysis, data):
     df = analysis.generate_pca()["transformed_data"].iloc[:, range(0, 5)]
     dimensions = [
         {"label": i, "values": tuple(value)} for i, value in df.items()
@@ -104,13 +104,14 @@ def pca_plot_0_5(analysis):
         go.Splom(
             dimensions=dimensions,
             showlowerhalf=False,
+            customdata=data.index,
         )
     )
     return fig
 
 
 @pt.fixture
-def pca_plot_1_3(analysis):
+def pca_plot_1_3(analysis, data):
     df = analysis.generate_pca()["transformed_data"].iloc[:, range(1, 3)]
     dimensions = [
         {"label": i, "values": tuple(value)} for i, value in df.items()
@@ -119,6 +120,7 @@ def pca_plot_1_3(analysis):
         go.Splom(
             dimensions=dimensions,
             showlowerhalf=False,
+            customdata=data.index,
         )
     )
     return fig
