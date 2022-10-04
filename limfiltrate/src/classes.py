@@ -154,7 +154,10 @@ if __name__ == "__main__":
         Output("dataTable", "children"), Input("pcaPlot", "selectedData")
     )
     def _data_table(selectedData):
-        points = [point["customdata"] for point in selectedData["points"]]
+        try:
+            points = [point["customdata"] for point in selectedData["points"]]
+        except TypeError:
+            points = analysis.data.index
         graphics.analysis.filter_data(points)
         table = graphics.generate_data_table()
         return table
