@@ -98,7 +98,7 @@ class Graphics:
         self.data = analysis.data
         return None
 
-    def generate_pca_plot(self, pcs_to_show=range(0, 5)):
+    def generate_pca_plot(self, pcs_to_show=range(0, 4)):
         pca = self.analysis.generate_pca()
         df = pca["transformed_data"].iloc[:, pcs_to_show]
         # print(df.head())
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         Output("pcaPlot", "figure"),
         Input("pcsToDisplay", "value"),
         Input("pcaRecalc", "n_clicks"),
-        State("pcaPlot", "selectedData")
+        State("pcaPlot", "selectedData"),
     )
     def _pca_plot(value, n_clicks, selectedData):
         try:
@@ -159,7 +159,7 @@ if __name__ == "__main__":
             points = analysis.data.index
         graphics.analysis.filter_data(points)
         graphics.analysis.generate_pca()
-        return graphics.generate_pca_plot(range(*value))
+        return graphics.generate_pca_plot(range(value[0], value[1] + 1))
 
     @app.callback(
         Output("dataTable", "children"), Input("pcaPlot", "selectedData")
@@ -184,7 +184,7 @@ if __name__ == "__main__":
                                     0,
                                     10,
                                     step=1,
-                                    value=[0, 5],
+                                    value=[0, 4],
                                     id="pcsToDisplay",
                                     marks={
                                         i: str(i + 1) for i in range(0, 10)
