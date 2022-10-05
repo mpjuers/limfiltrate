@@ -20,7 +20,7 @@ data_path = os.path.join(
 def test_pca(pcafixture, data):
     analysis = Analysis(data_path).generate_pca()
     scaler = StandardScaler()
-    scaled = scaler.fit_transform(data.drop("class", axis=1))
+    scaled = scaler.fit_transform(data)
     pca = PCA()
     pca.fit_transform(scaled)
     df = pd.DataFrame(

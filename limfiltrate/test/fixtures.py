@@ -35,7 +35,6 @@ def data():
     filtered_data = data.set_index("capture_id").select_dtypes(
         include=["float64"]
     )
-    filtered_data["class"] = classes
     return filtered_data
 
 
@@ -47,7 +46,7 @@ def analysis():
 @pt.fixture
 def pcafixture(data):
     scaler = StandardScaler()
-    scaled = scaler.fit_transform(data.drop("class", axis=1))
+    scaled = scaler.fit_transform(data)
     pca = PCA()
     return pd.DataFrame(
         pca.fit_transform(scaled),
@@ -65,12 +64,7 @@ def customdata(data):
 @pt.fixture
 def summary(data):
     return (
-        (
-            data.drop("class", axis=1)
-            .melt()
-            .groupby("variable")
-            .agg(["min", "max", "mean", "std"])
-        )
+        (data.melt().groupby("variable").agg(["min", "max", "mean", "std"]))
         .droplevel(0, axis=1)
         .round(2)
     )

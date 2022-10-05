@@ -34,13 +34,12 @@ class Analysis:
             .str.lower()
         )
         try:
-            classes = self.data["class"]
+            self.classes = self.data["class"]
         except KeyError:
-            classes = ["" for row in range(self.data.shape[0])]
+            self.classes = ["" for row in range(self.data.shape[0])]
         self.data = self.data.set_index("capture_id").select_dtypes(
             include=["float64"]
         )
-        self.data["class"] = classes
         self.data_filtered = self.data
         return None
 
@@ -59,6 +58,11 @@ class Analysis:
             self.data_filtered = self.data.loc[customdata]
         return self
 
+    def scale(self):
+        scaler = StandardScaler()
+        scaled = scaler.fit_transform(self.data_filtered)
+        return pd.DataFrame(scaled, columns=self.data.columns)
+
     def generate_pca(self, *args, **kwargs):
         """
         **kwargs:
@@ -68,8 +72,7 @@ class Analysis:
             pca (PCA): the fit pca object
             transformed_data (DataFrame): data transformed according to pca
         """
-        scaler = StandardScaler()
-        scaled = scaler.fit_transform(self.data_filtered.drop("class", axis=1))
+        scaled = self.scale()
         pca = PCA()
         df = pd.DataFrame(
             pca.fit_transform(scaled),
@@ -80,16 +83,12 @@ class Analysis:
     def summarize(
         self, stats=["min", "max", "mean", "std"], precision=2, *args, **kwargs
     ):
-        return (
-            (
-                self.data_filtered.drop("class", axis=1)
-                .melt()
-                .groupby("variable")
-                .agg(stats)
-            )
+        df = (
+            (self.data_filtered.melt().groupby("variable").agg(stats))
             .droplevel(0, axis=1)
             .round(precision)
         )
+        return df
 
 
 class Graphics:
