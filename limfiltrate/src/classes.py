@@ -5,7 +5,7 @@ import json
 import os
 import random
 
-from dash import Dash, html, dcc, dash_table, Input, Output
+from dash import Dash, html, dcc, dash_table, Input, Output, State
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objs as go
@@ -69,7 +69,7 @@ class Analysis:
             transformed_data (DataFrame): data transformed according to pca
         """
         scaler = StandardScaler()
-        scaled = scaler.fit_transform(self.data.drop("class", axis=1))
+        scaled = scaler.fit_transform(self.data_filtered.drop("class", axis=1))
         pca = PCA()
         df = pd.DataFrame(
             pca.fit_transform(scaled),
@@ -173,7 +173,7 @@ if __name__ == "__main__":
                                     0,
                                     10,
                                     step=1,
-                                    value=[0, 6],
+                                    value=[0, 5],
                                     id="pcsToDisplay",
                                     marks={
                                         i: str(i + 1) for i in range(0, 10)
