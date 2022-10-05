@@ -146,8 +146,19 @@ if __name__ == "__main__":
     table = graphics.generate_data_table()
     fig = graphics.generate_pca_plot(range(1, 5))
 
-    @app.callback(Output("pcaPlot", "figure"), Input("pcsToDisplay", "value"))
-    def _pca_plot(value):
+    @app.callback(
+        Output("pcaPlot", "figure"),
+        Input("pcsToDisplay", "value"),
+        Input("pcaRecalc", "n_clicks"),
+        State("pcaPlot", "selectedData")
+    )
+    def _pca_plot(value, n_clicks, selectedData):
+        try:
+            points = [point["customdata"] for point in selectedData["points"]]
+        except TypeError:
+            points = analysis.data.index
+        graphics.analysis.filter_data(points)
+        graphics.analysis.generate_pca()
         return graphics.generate_pca_plot(range(*value))
 
     @app.callback(
@@ -183,6 +194,7 @@ if __name__ == "__main__":
                                     style={"width": "90vh", "height": "90vh"},
                                     id="pcaPlot",
                                 ),
+                                html.Button("Recalculate PCA", id="pcaRecalc"),
                             ]
                         ),
                     ],
