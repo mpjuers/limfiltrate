@@ -18,7 +18,7 @@ random.seed(666)
 
 dirname = os.path.dirname(__file__)
 data_path = os.path.join(
-    dirname, "../Data/2022-07-26_test4_with-classification.csv"
+    dirname, "../../Data/2022-07-26_test4_with-classification.csv"
 )
 
 

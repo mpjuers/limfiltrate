@@ -177,7 +177,7 @@ if __name__ == "__main__":
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
     os.chdir(dname)
-    datapath = "../Data/2022-09-30.csv"
+    datapath = "../../Data/2022-09-30.csv"
     analysis = Analysis(datapath)
     graphics = Graphics(analysis)
     app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
