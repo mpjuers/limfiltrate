@@ -81,7 +81,7 @@ class Analysis:
         return {"pca": pca, "transformed_data": df}
 
     def summarize(
-        self, stats=["min", "max", "mean", "std"], precision=2, *args, **kwargs
+        self, stats=["min", "max", "mean", "std"], precision=5, *args, **kwargs
     ):
         df = (
             (self.data_filtered.melt().groupby("variable").agg(stats))
@@ -114,10 +114,18 @@ class Graphics:
         )
         return fig
 
-    def generate_data_table(self, precision=2):
+    def generate_data_table(self, precision=5):
         summary = self.analysis.summarize()
         summary.insert(0, "particle_property", summary.index)
-        summary = summary.round(precision)
+        scaled = self.analysis.data_filtered.to_numpy()
+        data_mean = scaled.mean()
+        feature_mean = scaled.mean(axis=0)
+        ss_total = ((data_mean - scaled) ** 2).sum()
+        ss_between = (feature_mean - data_mean) ** 2
+        ss_explained = ss_between / ss_total
+
+        summary.insert(len(summary.columns), "ss_explained", ss_explained)
+        summary = summary.sort_values("ss_explained", ascending=False)
         table = dash_table.DataTable(
             summary.to_dict("records"),
             [{"name": i, "id": i} for i in summary.columns],

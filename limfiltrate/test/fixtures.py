@@ -66,15 +66,23 @@ def summary(data):
     return (
         (data.melt().groupby("variable").agg(["min", "max", "mean", "std"]))
         .droplevel(0, axis=1)
-        .round(2)
+        .round(5)
     )
 
 
 @pt.fixture
-def data_table(summary):
+def data_table(summary, data):
+    data = data.to_numpy()
     summary.insert(0, "particle_property", summary.index)
+    data_mean = data.mean()
+    feature_mean = data.mean(axis=0)
+    ss_total = ((data_mean - data) ** 2).sum()
+    ss_between = (feature_mean - data_mean) ** 2
+    ss_explained = ss_between / ss_total
+    summary.insert(len(summary.columns), "ss_explained", ss_explained)
+    summary = summary.sort_values("ss_explained", ascending=False)
     table = dash_table.DataTable(
-        summary.round(2).to_dict("records"),
+        summary.to_dict("records"),
         [{"name": i, "id": i} for i in summary.columns],
         style_as_list_view=True,
         style_cell={"textAlign": "left"},
