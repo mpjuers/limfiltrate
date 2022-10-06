@@ -112,8 +112,13 @@ class Graphics:
         df = pca["transformed_data"].iloc[:, pcs_to_show]
         # print(df.head())
         dimensions = [
-            {"label": column, "values": tuple(value)}
-            for column, value in df.items()
+            {
+                "label": column + "<br>{:.3f}".format(var_percent),
+                "values": tuple(value),
+            }
+            for (column, value,), var_percent in zip(
+                df.items(), pca["pca"].explained_variance_ratio_
+            )
         ]
         fig = go.Figure(
             go.Splom(
@@ -124,7 +129,7 @@ class Graphics:
         )
         return fig
 
-    def generate_data_table(self, precision=2):
+    def generate_data_table(self, *args, **kwargs):
         """
         Generate and style data table.
         """

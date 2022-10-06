@@ -26,6 +26,7 @@ data_path = os.path.join(
 def test_generate_pca_plot(request, analysis, range_in, expected):
     fig = request.getfixturevalue(expected)
     print(fig)
+    print(Graphics(analysis).generate_pca_plot(range_in))
     assert fig == Graphics(analysis).generate_pca_plot(range_in)
 
 

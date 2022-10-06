@@ -56,6 +56,14 @@ def pcafixture(data):
 
 
 @pt.fixture
+def pcafixture_analysis(data):
+    scaler = StandardScaler()
+    scaled = scaler.fit_transform(data)
+    pca = PCA()
+    return pca.fit(data)
+
+
+@pt.fixture
 def customdata(data):
     n_sample = 20
     customdata = random.sample(list(data.index), n_sample)
@@ -108,10 +116,18 @@ def data_table(summary, data):
 
 
 @pt.fixture
-def pca_plot_0_5(analysis, data):
-    df = analysis.generate_pca()["transformed_data"].iloc[:, range(0, 5)]
+def pca_plot_0_5(analysis, data, pcafixture, pcafixture_analysis):
+    df = pcafixture.iloc[:, range(0, 5)]
+    pca = analysis.generate_pca()["pca"]
     dimensions = [
-        {"label": i, "values": tuple(value)} for i, value in df.items()
+        {
+            "label": column + "<br>{:.3f}".format(var_percent),
+            "values": tuple(value),
+        }
+        for (
+            column,
+            value,
+        ), var_percent in zip(df.items(), pca.explained_variance_ratio_)
     ]
     fig = go.Figure(
         go.Splom(
@@ -126,8 +142,16 @@ def pca_plot_0_5(analysis, data):
 @pt.fixture
 def pca_plot_1_3(analysis, data):
     df = analysis.generate_pca()["transformed_data"].iloc[:, range(1, 3)]
+    pca = analysis.generate_pca()["pca"]
     dimensions = [
-        {"label": i, "values": tuple(value)} for i, value in df.items()
+        {
+            "label": column + "<br>{:.3f}".format(var_percent),
+            "values": tuple(value),
+        }
+        for (
+            column,
+            value,
+        ), var_percent in zip(df.items(), pca.explained_variance_ratio_)
     ]
     fig = go.Figure(
         go.Splom(
