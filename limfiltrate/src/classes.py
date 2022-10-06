@@ -93,11 +93,20 @@ class Analysis:
 
 class Graphics:
     def __init__(self, analysis):
+        """
+        analysis (Analysis): An analysis instance containing data and operations.
+        """
         self.analysis = analysis
         self.data = analysis.data
         return None
 
-    def generate_pca_plot(self, pcs_to_show=range(0, 4)):
+    def generate_pca_plot(self, pcs_to_show=range(0, 5)):
+        """
+        Generate Splom for PCs selected.
+
+        pcs_to_show (list-like): A sequence of numbers representing which
+            principle components to show in the Splom.
+        """
         pca = self.analysis.generate_pca()
         df = pca["transformed_data"].iloc[:, pcs_to_show]
         # print(df.head())
@@ -114,7 +123,10 @@ class Graphics:
         )
         return fig
 
-    def generate_data_table(self, precision=5):
+    def generate_data_table(self, precision=2):
+        """
+        Generate and style data table.
+        """
         summary = self.analysis.summarize()
         summary.insert(0, "particle_property", summary.index)
         scaled = self.analysis.data_filtered.to_numpy()
@@ -127,9 +139,11 @@ class Graphics:
         summary.insert(len(summary.columns), "ss_explained", ss_explained)
         summary = summary.sort_values("ss_explained", ascending=False)
         table = dash_table.DataTable(
+            # Data table takes data frame as dict.
             summary.to_dict("records"),
             [{"name": i, "id": i} for i in summary.columns],
             style_as_list_view=True,  # Remove vertical cell lines.
+            # Align all text to left except particle property.
             style_cell={"textAlign": "left"},
             style_cell_conditional=[
                 {
@@ -143,6 +157,7 @@ class Graphics:
 
 if __name__ == "__main__":
 
+    # Set path to script directory.
     abspath = os.path.abspath(__file__)
     dname = os.path.dirname(abspath)
     os.chdir(dname)
@@ -172,6 +187,7 @@ if __name__ == "__main__":
         Output("dataTable", "children"), Input("pcaPlot", "selectedData")
     )
     def _data_table(selectedData):
+        # Exception handling for no data selected: populate with all data.
         try:
             points = [point["customdata"] for point in selectedData["points"]]
         except TypeError:
