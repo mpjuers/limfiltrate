@@ -5,6 +5,7 @@ import os
 import random
 
 from dash import dash_table
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import pytest as pt
@@ -81,6 +82,16 @@ def data_table(summary, data):
     ss_explained = ss_between / ss_total
     summary.insert(len(summary.columns), "ss_explained", ss_explained)
     summary = summary.sort_values("ss_explained", ascending=False)
+    padded = pd.DataFrame(
+        np.pad(
+            [
+                data.shape[0],
+            ],
+            (0, summary.shape[1] - 1),
+        ).reshape(1, -1),
+        columns=summary.columns,
+    )
+    summary = summary.append(padded)
     table = dash_table.DataTable(
         summary.to_dict("records"),
         [{"name": i, "id": i} for i in summary.columns],

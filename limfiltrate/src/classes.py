@@ -7,6 +7,7 @@ import random
 
 from dash import Dash, html, dcc, dash_table, Input, Output, State
 import dash_bootstrap_components as dbc
+import numpy as np
 import plotly.express as px
 import plotly.graph_objs as go
 import pandas as pd
@@ -138,6 +139,16 @@ class Graphics:
 
         summary.insert(len(summary.columns), "ss_explained", ss_explained)
         summary = summary.sort_values("ss_explained", ascending=False)
+        padded = pd.DataFrame(
+            np.pad(
+                [
+                    self.analysis.data_filtered.shape[0],
+                ],
+                (0, summary.shape[1] - 1),
+            ).reshape(1, -1),
+            columns=summary.columns,
+        )
+        summary = summary.append(padded)
         table = dash_table.DataTable(
             # Data table takes data frame as dict.
             summary.to_dict("records"),
